@@ -4,18 +4,20 @@ from weasyprint import HTML
 import os
 import webbrowser
 from agents.agent_buscador import AgenteBuscadorDeVagas
+from dotenv import load_dotenv
+
+load_dotenv()
 
 agente_buscador = AgenteBuscadorDeVagas()
 
-# Configure a chave da API do Gemini (substitua pela sua)
-genai.configure(api_key="AIzaSyCFjMLuYs7s_T0nml24hvEybkLS2bTqJek")
-model = genai.GenerativeModel('gemini-2.0-flash') # Ou o modelo que você preferir
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 app = Flask(__name__)
 
 # Variável global para armazenar as informações do usuário e histórico do chat (para uma única interação)
 user_data = {'historico_chat': []}
-MAX_INTERACTIONS_ENTREVISTA = 5 # Número máximo de perguntas na entrevista inicial
+MAX_INTERACTIONS_ENTREVISTA = 5
 FIM_BUSCA_VAGAS = False # Flag para indicar se a busca de vagas já ocorreu
 
 @app.route('/')
@@ -65,7 +67,7 @@ def iniciar_processo():
         except Exception as e:
             print(f"Erro ao gerar a primeira pergunta (Agente 1): {e}")
             return jsonify({'error': 'Ocorreu um erro ao iniciar a entrevista.'}), 500
-    return redirect(url_for('index')) # Se a requisição não for POST, volta para o formulário
+    return redirect(url_for('index'))
 
 @app.route('/chat')
 def chat():
@@ -84,7 +86,6 @@ def enviar_mensagem():
 
     if not FIM_BUSCA_VAGAS:
         if len(user_data['historico_chat']) // 2 >= MAX_INTERACTIONS_ENTREVISTA:
-            # Transição para o Agente 2 (Designer de Currículo HTML)
             print("Fim da entrevista (Agente 1). Iniciando Agente 2 (Designer de Currículo HTML)...")
             prompt_agente2 = f"""Você é o Agente 2, um designer de currículos profissional especializado em HTML e CSS.
             Com base na seguinte conversa com o usuário, gere um currículo formatado em HTML e CSS embutido.
@@ -112,7 +113,6 @@ def enviar_mensagem():
                 print(f"Erro ao gerar currículo HTML (Agente 2): {e}")
                 return jsonify({'error': 'Ocorreu um erro ao gerar o currículo em HTML.'}), 500
         else:
-            # Continuação da entrevista com o Agente 1
             prompt_agente1_continuacao = f"""Você é o Agente 1, um entrevistador amigável e perspicaz.
             Continue a entrevista com o usuário para coletar informações detalhadas para a criação do currículo.
             Mantenha as perguntas concisas, relevantes e sucintas. Fale de forma simples, curta e objetiva.
