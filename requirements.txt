@@ -1,0 +1,5 @@
+Flask
+google-generativeai
+weasyprint
+python-dotenv
+google-adk
