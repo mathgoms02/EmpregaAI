@@ -46,11 +46,13 @@ O VagaBot é um chatbot inteligente desenvolvido para auxiliar candidatos em tod
 
 4.  **Execute o Aplicativo:**
 
+    * Você pode rodar utilizando o botão runner da sua IDE ou rodar o seguinte comando no terminal:
+
     ```bash
     python app.py
     ```
 
-5.  **Acesse no Navegador:**
+6.  **Acesse no Navegador:**
 
     * Abra seu navegador e acesse o endereço fornecido (geralmente `http://127.0.0.1:5000/`).
 
